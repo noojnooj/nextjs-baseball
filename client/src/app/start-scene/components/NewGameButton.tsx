@@ -1,12 +1,14 @@
 'use client';
 
 import { Button } from "./Button";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 export function NewGameButton() {
+  const router = useRouter();
 
   const handleNewGame = () => {
-    console.log("초기화면 넘어가요~");
+    router.push("/initialsetup-scene")
+
   };
   return (
     <Button label="New Game" onClick={handleNewGame} />
