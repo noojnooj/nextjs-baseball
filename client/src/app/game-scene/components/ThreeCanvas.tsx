@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import * as THREE from 'three';
 import { useMovement } from '../hooks/useMovement';
 
 export default function ThreeCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
   const movement = useMovement();
+  const router = useRouter();
+
 
 useEffect(() => {
   const mount = mountRef.current!;
@@ -50,12 +53,41 @@ useEffect(() => {
   character.position.set(0, 0.5, 0);
   scene.add(character);
 
+  // 건물
+  const building = new THREE.Mesh(
+  new THREE.BoxGeometry(2, 5, 2), // 폭=2, 높이=5, 깊이=2
+  new THREE.MeshStandardMaterial({ color: 0x888888 }) // 회색
+);
+  building.position.set(-5, 2.5, -5); // y는 높이의 절반 (바닥에 닿게)
+  scene.add(building);
+
+
+
+  let hasRedirected = false;
+
   const animate = () => {
     const speed = 0.05;
-    if (movement.up) character.position.z -= speed;
-    if (movement.down) character.position.z += speed;
-    if (movement.left) character.position.x -= speed;
-    if (movement.right) character.position.x += speed;
+    const minX = -8, maxX = 8;
+    const minZ = -8, maxZ = 8;
+    const nextX = character.position.x + (movement.left ? -speed : movement.right ? speed : 0);
+    const nextZ = character.position.z + (movement.up ? -speed : movement.down ? speed : 0);
+
+    // 캐릭터가 바닥 영역을 벗어나지 못하게 이동 제한
+    if (nextX >= minX && nextX <= maxX) {
+      character.position.x = nextX;
+    }
+    if (nextZ >= minZ && nextZ <= maxZ) {
+      character.position.z = nextZ;
+    }
+
+  const characterBox = new THREE.Box3().setFromObject(character);
+  const buildingBox = new THREE.Box3().setFromObject(building);
+
+   if (!hasRedirected && characterBox.intersectsBox(buildingBox)) {
+    hasRedirected = true;
+    router.push('/home-scene');
+   }
+    
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
   };
