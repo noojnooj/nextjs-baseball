@@ -49,7 +49,6 @@ useEffect(() => {
     }
   }
 
-  // Direction to folder mapping
   const directionFolders = {
     downLeft: 'Freya_Walk_Down_Left',
     downRight: 'Freya_Walk_Down_Right',
@@ -60,7 +59,6 @@ useEffect(() => {
   const textureMap: Record<string, THREE.Texture[]> = {};
   const frameCount = 10;
 
-  // Preload textures for all directions
   Object.entries(directionFolders).forEach(([key, folder]) => {
     textureMap[key] = [];
     for (let i = 1; i <= frameCount; i++) {
@@ -70,7 +68,6 @@ useEffect(() => {
     }
   });
 
-  // Character creation with initial downLeft texture
   const character = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1.5),
     new THREE.MeshBasicMaterial({
@@ -106,7 +103,6 @@ useEffect(() => {
 
   let hasRedirected = false;
 
-  // Helpers to manage animation frame
   let frameIndex = 0;
   let frameTick = 0;
 
